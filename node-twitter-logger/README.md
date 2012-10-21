@@ -1,6 +1,6 @@
-# Twitter stream input into fluentd
+# Twitter stream transport into fluentd
 
-Ouputs twitter stream into fluentd.  This is a simple mashup which uses [ntwitter] and [fluent-logger-node]
+Outputs twitter stream into fluentd via TCP.  This is a simple mashup which uses [ntwitter] and [fluent-logger-node]
 
 ## Install
 
@@ -8,7 +8,7 @@ Run the following in the current directory to install dependencies:
 
     npm install
     
-## Prerequistes
+## Prerequisites
 
 fluentd daemon should listen on TCP port.  See sample-fluent.conf
 

@@ -11,6 +11,7 @@ Gem packaging will be done in the future.
 
 ### Configuration
 Please add the following configurations to fluent.conf
+
     # twitterstream input
     <source>
     type twitterstream
