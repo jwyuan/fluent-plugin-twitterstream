@@ -12,7 +12,7 @@ Gem packaging will be done in the future.
 ### Configuration
 Please add the following configurations to fluent.conf
 
-    # twitterstream input
+    ## twitterstream input
     <source>
     type twitterstream
     consumer_key ...          ## required
@@ -30,7 +30,6 @@ Please add the following configurations to fluent.conf
 
 ### TODO
 
-* A problem still exists with buffered output plugins (such as fluentd-plugin-td)
 * Gem packaging
 
 [Twitter streaming APIs]: https://dev.twitter.com/docs/streaming-apis

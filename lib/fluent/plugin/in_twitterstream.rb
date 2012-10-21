@@ -13,8 +13,7 @@ class TwitterStreamInput < Fluent::Input
   # optional params
   config_param :tag,                  :string, :default => 'twitterstream.test'
 
-  # at most one of these must be provided
-  # if none of these are specified, will use the sample stream (which requires no parameters)
+  # at most one of these can be provided (if none then use the sample stream)
   config_param :follow,               :string, :default => nil 
   config_param :track,                :string, :default => nil
   config_param :locations,            :string, :default => nil
@@ -57,44 +56,53 @@ class TwitterStreamInput < Fluent::Input
     if @location
       $log.debug "starting twitterstream: tag:#{@tag} locations:#{@locations}"
       @client.locations(@locations) do |status|
-        emit_message(status)
+        transform_status(status)
       end
     elsif @track
       $log.debug "starting twitterstream: tag:#{@tag} track:#{@track}"
       client.track(@track) do |status|
-        emit_message(status)
+        transform_status(status)
       end
     elsif @follow
       $log.debug "starting twitterstream: tag:#{@tag} follow:#{@follow}"
       client.follow(@follow) do |status|
-        emit_message(status)
+        transform_status(status)
       end
     else
       $log.debug "starting twitterstream: tag:#{@tag} sample"
       client.sample do |status|
-        emit_message(status)
+        transform_status(status)
       end
     end
   end
 
-  # can potentially massage the message a bit before sending out
-  def emit_message(status)
+  # only pick out necessary properties in object to store
+  def transform_status(status)
     record = {
-      'created_at' => status.created_at,
-      'user_screen_name' => status.user.screen_name,
-      'user_name' => status.user.name,
-      'text' => status.text,
-      'retweet_count' => status.retweet_count
+      'created_at' => status.created_at.to_s,
+      'user_screen_name' => status.user.screen_name.to_s,
+      'user_name' => status.user.name.to_s,
+      'text' => status.text.to_s,
+      'retweet_count' => status.retweet_count.to_s
     }
     if status.retweeted_status
-      record['rt_created_at'] = status.retweeted_status.created_at
-      record['rt_user_screen_name'] = status.retweeted_status.user.screen_name
-      record['rt_user_name'] = status.retweeted_status.user.name
-      record['rt_text'] = status.retweeted_status.text
-      record['rt_retweet_count'] = status.retweeted_status.retweet_count
+      record['rt_created_at'] = status.retweeted_status.created_at.to_s
+      record['rt_user_screen_name'] = status.retweeted_status.user.screen_name.to_s
+      record['rt_user_name'] = status.retweeted_status.user.name.to_s
+      record['rt_text'] = status.retweeted_status.text.to_s
+      record['rt_retweet_count'] = status.retweeted_status.retweet_count.to_s
     end
-    
-    Engine.emit(@tag, Engine.now, record)
+
+    emit_message(record)
+  end
+  
+  def emit_message(msg)
+    begin
+      Engine.emit(@tag, Engine.now, msg)
+    rescue => e
+      $log.error "unexpected error", :error=>$!.to_s
+      $log.error_backtrace
+    end
   end
 end
 
