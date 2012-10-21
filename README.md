@@ -15,25 +15,21 @@ Please add the following configurations to fluent.conf
     # twitterstream input
     <source>
     type twitterstream
-    ## required (fill in your api keys)
-    consumer_key ...
-    consumer_secret ...
-    access_token_key ...
-    access_token_secret ...
+    consumer_key ...          ## required
+    consumer_secret ...       ## required
+    access_token_key ...      ## required
+    access_token_secret ...   ## required
+    tag twitter.sample        ## optional (defaults to twitterstream.test)
 
-    ## optional (defaults to twitterstream.test)
-    tag twitter.sample
-
-    ## at most one of the following three lines is required
-    ## if none of these are present, will consume the sample stream
+    ## at most one of the following three lines is required (if none, uses sample stream)
     ## Reference: https://dev.twitter.com/docs/api/1.1/post/statuses/filter
-    # locations -122.75,36.8,-121.75,37.8,-74,40,-73,41
-    # track ruby,python
-    # follow 1224242142,12412412442
+    locations -122.75,36.8,-121.75,37.8,-74,40,-73,41
+    track ruby,python
+    sfollow 1224242142,12412412442
+    </source>
 
 ### TODO
 
-Befre using [log4js] support, you should install it IN YOUR APPLICATION.
 * A problem still exists with buffered output plugins (such as fluentd-plugin-td)
 * Gem packaging
 
